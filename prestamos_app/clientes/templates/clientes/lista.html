@@ -1,0 +1,31 @@
+<h2>Clientes {{ interes }}%</h2>
+
+<a href="/admin/">Ir al admin</a>
+
+<table border="1">
+    <tr>
+        <th>Nombre</th>
+        <th>Grupo</th>
+        <th>Capital</th>
+        <th>Interés</th>
+        <th>Ganancia</th>
+        <th>Acciones</th>
+    </tr>
+
+    {% for cliente in clientes %}
+    <tr>
+        <td>{{ cliente.nombre }}</td>
+        <td>{{ cliente.grupo }}</td>
+        <td>{{ cliente.capital }}</td>
+        <td>{{ cliente.interes }}%</td>
+        <td>{{ cliente.porcentaje_ganancia }}</td>
+        <td>
+            <a href="{% url 'editar_cliente' cliente.id %}">Editar</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6">No hay clientes</td>
+    </tr>
+    {% endfor %}
+</table>
