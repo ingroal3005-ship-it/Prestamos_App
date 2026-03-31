@@ -9,7 +9,7 @@ class Cliente(models.Model):
     ]
 
     nombre = models.CharField(max_length=100)
-    grupo = models.CharField(max_length=100)
+    grupo = models.CharField(max_length=100, default='General')
     capital = models.DecimalField(max_digits=10, decimal_places=2)
     interes = models.IntegerField(choices=INTERES_CHOICES)
 
@@ -19,60 +19,33 @@ class Cliente(models.Model):
     porcentaje_gastos = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     porcentaje_reinversion = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
-    monto_trabajador = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    monto_ganancia = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    monto_gastos = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    monto_reinversion = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    def save(self, *args, **kwargs):
+        interes_decimal = Decimal(self.interes) / Decimal(100)
 
-    ampliacion_prestamo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    abonos_capital = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+        self.porcentaje_total = self.capital * interes_decimal
 
-def calcular_porcentajes(self):
-        interes = self.interes
+        if self.interes == 7:
+            self.porcentaje_trabajador = self.capital * Decimal('0.02')
+            self.porcentaje_ganancia = self.capital * Decimal('0.02')
+            self.porcentaje_gastos = Decimal('0.00')
+            self.porcentaje_reinversion = self.capital * Decimal('0.03')
 
-        # Reset
-        self.porcentaje_gastos = Decimal('0')
+        elif self.interes == 8:
+            self.porcentaje_trabajador = self.capital * Decimal('0.02')
+            self.porcentaje_ganancia = self.capital * Decimal('0.02')
+            self.porcentaje_gastos = self.capital * Decimal('0.01')
+            self.porcentaje_reinversion = self.capital * Decimal('0.03')
 
-        if interes == 7:
-            self.porcentaje_trabajador = Decimal('2')
-            self.porcentaje_ganancia = Decimal('2')
-            self.porcentaje_reinversion = Decimal('3')
+        elif self.interes == 9:
+            self.porcentaje_trabajador = self.capital * Decimal('0.02')
+            self.porcentaje_ganancia = self.capital * Decimal('0.02')
+            self.porcentaje_gastos = self.capital * Decimal('0.02')
+            self.porcentaje_reinversion = self.capital * Decimal('0.03')
 
-        elif interes == 8:
-            self.porcentaje_trabajador = Decimal('2')
-            self.porcentaje_ganancia = Decimal('2')
-            self.porcentaje_gastos = Decimal('1')
-            self.porcentaje_reinversion = Decimal('3')
-
-        elif interes == 9:
-            self.porcentaje_trabajador = Decimal('2')
-            self.porcentaje_ganancia = Decimal('2')
-            self.porcentaje_gastos = Decimal('2')
-            self.porcentaje_reinversion = Decimal('3')
-
-        # Total
-        self.porcentaje_total = (
-            self.porcentaje_trabajador +
-            self.porcentaje_ganancia +
-            self.porcentaje_gastos +
-            self.porcentaje_reinversion
-        )
-
-def calcular_montos(self):
-        capital = self.capital
-
-        self.monto_trabajador = (capital * self.porcentaje_trabajador) / 100
-        self.monto_ganancia = (capital * self.porcentaje_ganancia) / 100
-        self.monto_gastos = (capital * self.porcentaje_gastos) / 100
-        self.monto_reinversion = (capital * self.porcentaje_reinversion) / 100
-
-def save(self, *args, **kwargs):
-        self.calcular_porcentajes()
-        self.calcular_montos()
         super().save(*args, **kwargs)
 
-def __str__(self):
-        return self.nombre
+    def __str__(self):
+            return self.nombre
 
 
 class Pago(models.Model):
